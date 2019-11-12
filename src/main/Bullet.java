@@ -7,8 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class Bullet extends BulletObject {
-    Image BulletImg;
-    Direction direction;
+    EnemyObject enemy;
 
     @Override
     void render(GraphicsContext gc) {
@@ -43,12 +42,12 @@ public class Bullet extends BulletObject {
     }*/
     @Override
     void update() {
+        if (Math.abs(x-enemy.x + y-enemy.y) < 20)  hit = true;
+
+        x += Math.round( (double)(enemy.x-x)*speed/Math.abs(enemy.x-x + enemy.y-y) );
+        y += Math.round( (double)(enemy.y-y)*speed/Math.abs(enemy.x-x + enemy.y-y) );
 
 
-        x += Math.round( (double)(xDes-x)*speed/Math.abs(xDes-x + yDes-y) );
-        y += Math.round( (double)(yDes-y)*speed/Math.abs(xDes-x + yDes-y) );
-
-        if (Math.abs(x-xDes + y-yDes) < 20)  hit = true;
         //System.out.println(x + "  " + y);
        // System.out.println(xDes + "  " + yDes);
        // System.out.println("= " + Math.abs(x-xDes + y-yDes) );
@@ -74,10 +73,11 @@ public class Bullet extends BulletObject {
     }
 }
 class CreateBullet extends Bullet {
-    public Bullet creNormalBullet(int x, int y, int xDes, int yDes) {
+    public Bullet creNormalBullet(int x, int y, EnemyObject enemy) {
         Bullet bullet = new Bullet();
         bullet.x = x+30; bullet.y = y+15; // Điểm bắt đầu
-        bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
+       // bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
+        bullet.enemy = enemy;
         bullet.ID = Config.NorT_ID;
         bullet.speed = Config.NorB_Speed;
         bullet.damage = Config.NorT_Damage;
@@ -85,26 +85,28 @@ class CreateBullet extends Bullet {
         bullet.BulletImg = new Image("file:src/Image/Bullet.png");
         return bullet;
     }
-    public Bullet creSniperBullet(int x, int y, int xDes, int yDes) {
+    public Bullet creSniperBullet(int x, int y, EnemyObject enemy) {
         Bullet bullet = new Bullet();
         bullet.x = x+30; bullet.y = y+15; // Điểm bắt đầu
-        bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
+        //bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
+        bullet.enemy = enemy;
         bullet.ID = Config.SniT_ID;
         bullet.speed = Config.SniB_Speed;
         bullet.damage = Config.NorT_Damage;
         bullet.range = Config.NorT_Range;
-        bullet.BulletImg = new Image("file:src/Image/Bullet.png");
+        bullet.BulletImg = new Image("file:src/Image/Bullet_Sniper2.png");
         return bullet;
     }
-    public Bullet creMachineBullet(int x, int y, int xDes, int yDes) {
+    public Bullet creMachineBullet(int x, int y, EnemyObject enemy) {
         Bullet bullet = new Bullet();
         bullet.x = x+30; bullet.y = y+15; // Điểm bắt đầu
-        bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
+        //bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
+        bullet.enemy = enemy;
         bullet.ID = Config.MacT_ID;
         bullet.speed = Config.MacB_Speed;
         bullet.damage = Config.NorT_Damage;
         bullet.range = Config.NorT_Range;
-        bullet.BulletImg = new Image("file:src/Image/Bullet.png");
+        bullet.BulletImg = new Image("file:src/Image/Bullet_Machine2.png");
         return bullet;
     }
 }

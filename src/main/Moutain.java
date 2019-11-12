@@ -11,7 +11,7 @@ public class Moutain {
     int y;
     boolean empty;  // Vị trí đã đặt tháp hay chưa
 
-    public static List<Moutain> moutainsSmall() {       // button để hiện store khi kéo chuột vào (vị trí các ô có thể đặt tháp)
+    public static List<Moutain> moutainsSmall() {       // List button để hiện store khi kéo chuột vào (vị trí các ô có thể đặt tháp)
         List<Moutain> moutains = new ArrayList<>();
         for (int i=0; i<10; i++) {
             Moutain m = new Moutain();
@@ -20,14 +20,14 @@ public class Moutain {
             m.button.setLayoutY(MoutainPoints[i].y + 3);
             m.button.setPrefSize(60, 25);
             m.button.setOpacity(0);       ///Chỉnh độ mờ để check vị trí
-            m.x = MoutainPoints[i].x - 7;
+            m.x = MoutainPoints[i].x - 7;   // set tọa độ tâm button
             m.y = MoutainPoints[i].y - 45;
             m.empty = true;
             moutains.add(m);
         }
         return moutains;
     }
-    public static List<Moutain> moutainsBig() {     // button để ẩn store sau khi kéo chuột ra
+    public static List<Moutain> moutainsBig() {     // List button để ẩn store sau khi kéo chuột ra
         List<Moutain> moutains = new ArrayList<>();
         for (int i=0; i<10; i++) {
             Moutain m = new Moutain();
@@ -42,7 +42,7 @@ public class Moutain {
         }
         return moutains;
     }
-    public static List<Moutain> StoreButton(int x, int y) {     // button chọn mua tháp
+    public static List<Moutain> StoreButton(int x, int y) {     // List button chọn mua tháp
         List<Moutain> storeButton = new ArrayList<>();
         for (int i=0; i<3; i++) {
             Moutain m = new Moutain();

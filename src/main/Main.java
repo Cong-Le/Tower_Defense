@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ import java.util.List;
 public class Main extends Application {
 
     GraphicsContext gc;
-    List<TowerObject>  TowerObjects  = new ArrayList<>();
-    List<EnemyObject>  EnemyObjects  = new ArrayList<>();
+    List<TowerObject>  towerObjects  = new ArrayList<>();
+    List<EnemyObject>  enemyObjects  = new ArrayList<>();
     List<BulletObject> BulletObjects = new ArrayList<>();
     List<EnemyObject> temp = Run.enemy();
 
@@ -34,12 +35,11 @@ public class Main extends Application {
     CreateBullet cb = new CreateBullet();
     Enemy e = new Enemy();
     Bullet b = new Bullet();
-    Road road = new Road();
     Run run = new Run();
 
     int flag = 0,flag2 = 0;   // Chuột có ở Moutain Point hay không
     int sx, sy; // Tọa độ để vẽ Store
-    int time[] = new int[10];
+    int time[] = new int[10];   // Mảng lưu thời gian để xử lí tốc độ sinh đạn
     int timeE = 0;
     int index = 0; // Chỉ mục của list enemy
     int HP = Config.Player_HP, Money = Config.Player_Money;
@@ -64,34 +64,36 @@ public class Main extends Application {
         // Code tạo tháp
         for (int i=0; i<moutainsSmall.size(); i++) {
             root.getChildren().addAll(moutainsBig.get(i).button, moutainsSmall.get(i).button);
-            int finalI = i;
+            int i2 = i;
             moutainsSmall.get(i).button.setOnMouseEntered((event) -> {   // Kéo chuột vào Moutain Point
-                if (moutainsSmall.get(finalI).empty == true) {  // Vị trí còn trống (Chưa được xây tháp)
+                if ( moutainsSmall.get(i2).empty ) {  // Vị trí còn trống (Chưa được xây tháp)
                     flag = 1;
-                    sx = moutainsSmall.get(finalI).x;
-                    sy = moutainsSmall.get(finalI).y;
+                    sx = moutainsSmall.get(i2).x;
+                    sy = moutainsSmall.get(i2).y;
 
                     storeButton = Moutain.StoreButton(sx, sy);  // Tạo 3 button của store
                     root.getChildren().addAll(storeButton.get(0).button, storeButton.get(1).button, storeButton.get(2).button);
+                    //Circle towerRange = new Circle();
+                    //towerRange.setCenterX(moutainsSmall.get(i2).x); towerRange.setCenterY(moutainsSmall.get(i2).y);
 
                     storeButton.get(0).button.setOnMouseClicked((event2) -> {   // Click đặt Normal Tower
                         if (run.MONEY >= Config.NorT_Price) {
-                            TowerObjects.add(ct.creNormalTower(moutainsSmall.get(finalI).x, moutainsSmall.get(finalI).y));
-                            moutainsSmall.get(finalI).empty = false;
+                            towerObjects.add(ct.creNormalTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
+                            moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.NorT_Price;
                         }
                     });
                     storeButton.get(1).button.setOnMouseClicked((event3) -> {   // Click đặt Sniper Tower
                         if (run.MONEY >= Config.SniT_Price) {
-                            TowerObjects.add(ct.creSniperTower(moutainsSmall.get(finalI).x, moutainsSmall.get(finalI).y));
-                            moutainsSmall.get(finalI).empty = false;
+                            towerObjects.add(ct.creSniperTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
+                            moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.SniT_Price;
                         }
                     });
                     storeButton.get(2).button.setOnMouseClicked((event4) -> {   // Click đặt MachineGun Tower
                         if (run.MONEY >= Config.MacT_Price) {
-                            TowerObjects.add(ct.creMachineTower(moutainsSmall.get(finalI).x, moutainsSmall.get(finalI).y));
-                            moutainsSmall.get(finalI).empty = false;
+                            towerObjects.add(ct.creMachineTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
+                            moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.MacT_Price;
                         }
                     });
@@ -121,62 +123,61 @@ public class Main extends Application {
                 //run.GameStatus(stage);
 
                 if (timeE >= 300 && index <=55) {
-                    EnemyObjects.add(temp.get(index++));
+                    enemyObjects.add(temp.get(index++));
                     timeE = 0;
                 }
 
+                for (int iE=0; iE < enemyObjects.size(); iE++) {
+                    if (enemyObjects.get(iE).health <= 0) {   // Hạ địch, cộng money cho người chơi
+                        run.MONEY += enemyObjects.get(iE).reward;
+                        System.out.println("Money = " + run.MONEY);
+                        //System.out.println("Death");
+                        enemyObjects.remove(iE);
+                    } else if (enemyObjects.get(iE).pass) { // Địch đến điểm cuối, trừ HP người chơi
+                        enemyObjects.remove(iE);
+                        run.HP--;
+                    }
+                }
+
                 // Code kiểm tra và tạo bullet tấn công địch
-                int iE = 0;
-                for (int iT = 0; iT < TowerObjects.size(); iT++) {
-                   // for (int iE = 0; iE < EnemyObjects.size() ; iE++) {
-                    while (iE < EnemyObjects.size()) {
 
-                        int xPreEnemy = e.getPresentCoordinates(EnemyObjects.get(iE)).x;    // Tọa độ hiện tại của địch
-                        int yPreEnemy = e.getPresentCoordinates(EnemyObjects.get(iE)).y;
+                for (int iT = 0; iT < towerObjects.size(); iT++) {
+                    int iE = 0;
+                    if (time[iT] > towerObjects.get(iT).spaw) {
+                        while (iE < enemyObjects.size()) {
 
-                        double distance = road.distance(TowerObjects.get(iT).x, TowerObjects.get(iT).y, xPreEnemy, yPreEnemy); // Khoảng cách
+                            int xPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).x;    // Tọa độ hiện tại của địch
+                            int yPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).y;
+                            double distance = Road.distance(towerObjects.get(iT).x, towerObjects.get(iT).y, xPreEnemy, yPreEnemy); // Khoảng cách
 
-                        //System.out.println("Time" + iT + "= " + time[iT]);
-                        if (distance <= TowerObjects.get(iT).range && time[iT] > TowerObjects.get(iT).spaw) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
-                            time[iT] = 0;
-                            //System.out.println("Hihi");
-                            if (TowerObjects.get(iT).ID == 1)   // Là Normal Tower
-                                BulletObjects.add(cb.creNormalBullet(TowerObjects.get(iT).x, TowerObjects.get(iT).y, xPreEnemy, yPreEnemy));
-                                // Tạo 1 bullet tương ứng với Tower
-                            if (TowerObjects.get(iT).ID == 2)   // Là Sniper Tower
-                                BulletObjects.add(cb.creSniperBullet(TowerObjects.get(iT).x, TowerObjects.get(iT).y, xPreEnemy, yPreEnemy));
+                            if (distance <= towerObjects.get(iT).range) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
+                                time[iT] = 0;   // reset lại thời gian
 
-                            if (TowerObjects.get(iT).ID == 3)   // Là Machine Tower
-                                BulletObjects.add(cb.creMachineBullet(TowerObjects.get(iT).x, TowerObjects.get(iT).y, xPreEnemy, yPreEnemy));
-
-                                // Thêm bullet đó vào List để render
-                            break;
+                                // Kiểm tra loại tháp, tạo bullet tương ứng và thêm vào bullet list của tháp đó
+                                if (towerObjects.get(iT).ID == 1)  // Là Normal Tower
+                                    towerObjects.get(iT).bulletofTower.add(cb.creNormalBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                if (towerObjects.get(iT).ID == 2)   // Là Sniper Tower
+                                    towerObjects.get(iT).bulletofTower.add(cb.creSniperBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                if (towerObjects.get(iT).ID == 3)   // Là Machine Tower
+                                    towerObjects.get(iT).bulletofTower.add(cb.creMachineBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                break;
+                            }
+                            iE++;
                         }
-                        time[iT]++;
+                    }
 
-                        int iB = 0;
-                        while (iB < BulletObjects.size()) { // Xóa các bullet đã trúng địch
-                            if (BulletObjects.get(iB).hit) {    // Đạn đã trúng địch
-                                EnemyObjects.get(iE).health -= BulletObjects.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
-                                BulletObjects.remove(iB);       // Xóa đạn trong List
-                            } else iB++;
-                        }
-
-                        if (EnemyObjects.get(iE).health <= 0) {   // Hạ địch, cộng money cho người chơi
-                            run.MONEY += EnemyObjects.get(iE).reward;
-                            System.out.println("Death");
-                            EnemyObjects.remove(iE);
-                        } else if (EnemyObjects.get(iE).pass) { // Địch đến điểm cuối, trừ HP người chơi
-                            EnemyObjects.remove(iE);
-                            run.HP--;
-                        }else iE++;
-                        //run.GameStatus();
+                    int iB = 0;
+                    while (iB < towerObjects.get(iT).bulletofTower.size()) { // Xóa các bullet đã trúng địch
+                        if (towerObjects.get(iT).bulletofTower.get(iB).hit) {    // Đạn đã trúng địch
+                            enemyObjects.get(iE).health -= towerObjects.get(iT).bulletofTower.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
+                            // Viên đạn thứ iB của tháp thứ iT (Cơ mà đoạn này có khi chỉ cần xét iB = 0)
+                            towerObjects.get(iT).bulletofTower.remove(iB);       // Xóa đạn trong List
+                        } else iB++;
                     }
                     timeE += 1; // Càng nhiều Tower, địch sinh càng nhanh;
-
+                    time[iT]++;     // Tăng thời gian chờ, đạt đủ sẽ có thể sinh đạn
                 }
                 timeE += 3;
-
             }
 
         };
@@ -210,15 +211,25 @@ public class Main extends Application {
         gc.drawImage(new Image("file:src/Image/Map3.png"), 0, 0);
     }
 
-    public void update() {
-        BulletObjects.forEach(GameObject::update);
-        EnemyObjects.forEach(GameObject::update);
-        TowerObjects.forEach(GameObject::update);
+    private void update() {
+        //BulletObjects.forEach(GameObject::update);
+        towerObjects.forEach(bT -> bT.bulletofTower.forEach(GameObject::update));
+        enemyObjects.forEach(GameObject::update);
+        towerObjects.forEach(GameObject::update);
     }
 
-    public void render() {
-        BulletObjects.forEach(g -> g.render(gc));
-        EnemyObjects.forEach(g -> g.render(gc));
-        TowerObjects.forEach(g -> g.render(gc));
+    private void render() {
+        //BulletObjects.forEach(g -> g.render(gc));
+        //TowerObjects.forEach(bT -> bT.bulletofTower.forEach(g -> g.render(gc)));
+        for (TowerObject towerObject : towerObjects) {
+            for (int n = 0; n < towerObject.bulletofTower.size(); n++) {
+                towerObject.bulletofTower.get(n).render(gc);
+            }
+        }
+
+        for(int i=enemyObjects.size()-1; i>=0; i--) {
+            enemyObjects.get(i).render(gc);
+        }
+        towerObjects.forEach(g -> g.render(gc));
     }
 }

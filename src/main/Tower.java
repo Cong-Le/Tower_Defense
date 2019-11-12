@@ -7,7 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class Tower extends TowerObject {
-    Image TowerImg;
+
 
     @Override
     void render(GraphicsContext gc) {

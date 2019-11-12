@@ -83,7 +83,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="dynamic.classpath" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../BTLoop" />
+    <property name="last_opened_file_path" value="F:/BaiTapLon-master/Workspace" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -92,6 +92,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\lmc\IdeaProjects\BTL-OOP\src\Image" />
       <recent name="C:\Users\lmc\IdeaProjects\BTL-OOP\src\main" />
       <recent name="C:\Users\lmc\IdeaProjects\BTL-OOP\src" />
     </key>
@@ -216,6 +217,8 @@
       <workItem from="1573375928727" duration="22631000" />
       <workItem from="1573406616559" duration="957000" />
       <workItem from="1573407660993" duration="3754000" />
+      <workItem from="1573462841900" duration="2339000" />
+      <workItem from="1573536285020" duration="12139000" />
     </task>
     <servers />
   </component>

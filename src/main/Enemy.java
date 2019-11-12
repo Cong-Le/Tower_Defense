@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Enemy extends EnemyObject {
-    Image EnemyImg;
-    Direction direction;
 
 
     int wayPointIndex = 0;

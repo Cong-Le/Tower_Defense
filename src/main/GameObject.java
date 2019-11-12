@@ -3,6 +3,9 @@ package main;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
+import java.util.ArrayList;
+import java.util.List;
+
 abstract class GameObject {
     int x, y;
 
@@ -17,6 +20,8 @@ abstract class EnemyObject extends GameObject {
     public int reward;
     public double speed;
     boolean pass = false;   // Địch đã đến điểm kết thúc hay chưa
+    Image EnemyImg;
+    Direction direction;
 }
 abstract class TowerObject extends GameObject {
     int ID;
@@ -24,13 +29,17 @@ abstract class TowerObject extends GameObject {
     public int price;
     public double range;
     public double spaw;
-    public Bullet bullet = null;
+    //public Bullet bullet = null;
+    Image TowerImg;
+    List<BulletObject> bulletofTower = new ArrayList<>();
 }
 abstract class BulletObject extends GameObject {
-    int xDes, yDes;     // Điểm đến của đạn
+    //int xDes, yDes;     // Điểm đến của đạn
     boolean hit = false;    // Bullet đã trúng địch hay chưa
     int ID;
     public int damage;
     public double speed;
     public double range;
+    Image BulletImg;
+    Direction direction;
 }
