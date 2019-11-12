@@ -1,25 +1,27 @@
 package main;
 
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
 
 class Enemy extends EnemyObject {
 
-
-    int wayPointIndex = 0;
-    public Point getNextWayPoint() {  //Trả về điểm tiếp theo trên đường
+    private int wayPointIndex = 0;
+    private Point getNextWayPoint() {  //Trả về điểm tiếp theo trên đường
         if (wayPointIndex < Road.wayPoints.length - 1)
             return Road.wayPoints[++wayPointIndex];
         return null;
     }
 
-    public Point getPresentCoordinates(EnemyObject e) {  // Trả về điểm hiện tại của Enemy
+    Point getPresentCoordinates(EnemyObject e) {  // Trả về điểm hiện tại của Enemy
         return new Point((int)e.x, (int)e.y);
     }
 
@@ -32,17 +34,18 @@ class Enemy extends EnemyObject {
         //iv.setRotate(this.direction.getDegree());
         //iv.setFitWidth(30);
         //iv.setFitHeight(30);
-        Image enemy = iv.snapshot(params, null);
+        Image eImg = iv.snapshot(params, null);
 
-        gc.drawImage(enemy, x, y);
+        gc.drawImage(eImg, x, y);
 
+        // Health Bar
+        gc.setFill(Color.rgb(0, 200, 0));
+        gc.fillRect(x, y-5, health*22.0/healthSpace, 2);
+        gc.setFill(Color.rgb(200, 0, 0));
+        gc.fillRect(x + health*22.0/healthSpace, y-5, 22-health*22.0/healthSpace, 2);
 
-       /* gc.setFill(Color.RED);
-        gc.fillOval(Road.wayPoints[wayPointIndex].x, Road.wayPoints[wayPointIndex].y, 10, 10);
-        gc.setFill(Color.BLUE);
-        gc.fillOval(x, y, 10, 10);*/
     }
-    void calculateDirection() {     // Tính hướng đi tiếp theo cho Object
+    private void calculateDirection() {     // Tính hướng đi tiếp theo cho Object
         if (wayPointIndex >= Road.wayPoints.length) {       // Enemy đến điểm cuối
             return;
         }
@@ -51,8 +54,6 @@ class Enemy extends EnemyObject {
         if (Road.distance(x, y, currentWP.x, currentWP.y) <= speed) {
             x = currentWP.x;
             y = currentWP.y;
-
-            //System.out.println(x + " " + y);
 
             Point nextWayPoint = getNextWayPoint();
             if (nextWayPoint == null) return;
@@ -87,36 +88,40 @@ class Enemy extends EnemyObject {
     }
 }
 class CreateEnemy extends Enemy {
-    public Enemy creNormalEnemy() {
+    Enemy creNormalEnemy() {
         Enemy enemy = new Enemy();
         enemy.health = Config.NorE_Health;
+        enemy.healthSpace = Config.NorE_Health;
         enemy.speed = Config.NorE_Speed;
         enemy.reward = Config.NorE_Reward;
         enemy.direction = Direction.UP;
         enemy.EnemyImg = new Image("file:src/Image/Enemy_Normal2.png");
         return enemy;
     }
-    public Enemy creSmallerEnemy() {
+    Enemy creSmallerEnemy() {
         Enemy enemy = new Enemy();
         enemy.health = Config.SmaE_Health;
+        enemy.healthSpace = Config.SmaE_Health;
         enemy.speed = Config.SmaE_Speed;
         enemy.reward = Config.SmaE_Reward;
         enemy.direction = Direction.UP;
         enemy.EnemyImg = new Image("file:src/Image/Enemy_Smaller2.png");
         return enemy;
     }
-    public Enemy creTankerEnemy() {
+    Enemy creTankerEnemy() {
         Enemy enemy = new Enemy();
         enemy.health = Config.TanE_Health;
+        enemy.healthSpace = Config.TanE_Health;
         enemy.speed = Config.TanE_Speed;
         enemy.reward = Config.TanE_Reward;
         enemy.direction = Direction.UP;
         enemy.EnemyImg = new Image("file:src/Image/Enemy_Tanker2.png");
         return enemy;
     }
-    public Enemy creBossEnemy() {
+    Enemy creBossEnemy() {
         Enemy enemy = new Enemy();
         enemy.health = Config.BosE_Health;
+        enemy.healthSpace = Config.BosE_Health;
         enemy.speed = Config.BosE_Speed;
         enemy.reward = Config.BosE_Reward;
         enemy.direction = Direction.UP;

@@ -18,9 +18,12 @@ public class Tower extends TowerObject {
         //iv.setRotate(this.direction.getDegree());
         iv.setFitWidth(65);
         iv.setFitHeight(75);
-        Image tower = iv.snapshot(params, null);
+        Image tImg = iv.snapshot(params, null);
 
-        gc.drawImage(tower, x+7, y);
+        gc.drawImage(tImg, x+8, y+3);
+
+        gc.setFill(Color.RED);
+        gc.fillOval(x+35, y+40, 10, 10);
     }
 
     @Override
@@ -42,7 +45,7 @@ class CreateTower extends Tower {
     }
     public Tower creSniperTower(int x, int y) {
         Tower tower = new Tower();
-        tower.x = x;    tower.y = y-3;
+        tower.x = x;    tower.y = y-5;
         tower.ID = Config.SniT_ID;
         tower.damage = Config.SniT_Damage;
         tower.range = Config.SniT_Range;

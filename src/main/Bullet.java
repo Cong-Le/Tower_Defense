@@ -7,7 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 public class Bullet extends BulletObject {
-    EnemyObject enemy;
 
     @Override
     void render(GraphicsContext gc) {
@@ -17,9 +16,9 @@ public class Bullet extends BulletObject {
         //iv.setRotate(this.direction.getDegree());
         iv.setFitWidth(10);
         iv.setFitHeight(10);
-        Image bullet = iv.snapshot(params, null);
+        Image bImg = iv.snapshot(params, null);
 
-        gc.drawImage(bullet, x, y);
+        gc.drawImage(bImg, x, y);
     }
 
     /*void calculateDirection() {     // Tính hướng đi tiếp theo cho Object
@@ -42,15 +41,14 @@ public class Bullet extends BulletObject {
     }*/
     @Override
     void update() {
+
         if (Math.abs(x-enemy.x + y-enemy.y) < 20)  hit = true;
 
         x += Math.round( (double)(enemy.x-x)*speed/Math.abs(enemy.x-x + enemy.y-y) );
         y += Math.round( (double)(enemy.y-y)*speed/Math.abs(enemy.x-x + enemy.y-y) );
 
-
         //System.out.println(x + "  " + y);
-       // System.out.println(xDes + "  " + yDes);
-       // System.out.println("= " + Math.abs(x-xDes + y-yDes) );
+
 
         //System.out.println(x + " " +y);
 

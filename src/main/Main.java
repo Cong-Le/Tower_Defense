@@ -37,6 +37,7 @@ public class Main extends Application {
     Bullet b = new Bullet();
     Run run = new Run();
 
+    int TotalBullet =0;
     int flag = 0,flag2 = 0;   // Chuột có ở Moutain Point hay không
     int sx, sy; // Tọa độ để vẽ Store
     int time[] = new int[10];   // Mảng lưu thời gian để xử lí tốc độ sinh đạn
@@ -122,18 +123,17 @@ public class Main extends Application {
                 if (flag == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Moutain Point
                 //run.GameStatus(stage);
 
-                if (timeE >= 300 && index <=55) {
+                if (timeE >= 400 && index <=55) {   // Sinh địch từ list có sẵn
                     enemyObjects.add(temp.get(index++));
                     timeE = 0;
                 }
 
-                for (int iE=0; iE < enemyObjects.size(); iE++) {
-                    if (enemyObjects.get(iE).health <= 0) {   // Hạ địch, cộng money cho người chơi
+                for (int iE=0; iE < enemyObjects.size(); iE++) {    // Kiểm tra tình trạng của địch
+                    if (enemyObjects.get(iE).health <= 0) {
                         run.MONEY += enemyObjects.get(iE).reward;
-                        System.out.println("Money = " + run.MONEY);
-                        //System.out.println("Death");
+                        //System.out.println("Money = " + run.MONEY);
                         enemyObjects.remove(iE);
-                    } else if (enemyObjects.get(iE).pass) { // Địch đến điểm cuối, trừ HP người chơi
+                    } else if (enemyObjects.get(iE).pass) {
                         enemyObjects.remove(iE);
                         run.HP--;
                     }
@@ -151,8 +151,8 @@ public class Main extends Application {
                             double distance = Road.distance(towerObjects.get(iT).x, towerObjects.get(iT).y, xPreEnemy, yPreEnemy); // Khoảng cách
 
                             if (distance <= towerObjects.get(iT).range) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
-                                time[iT] = 0;   // reset lại thời gian
-
+                                time[iT] = 0;   // reset lại thời gian chờ sinh đạn
+                                TotalBullet++;
                                 // Kiểm tra loại tháp, tạo bullet tương ứng và thêm vào bullet list của tháp đó
                                 if (towerObjects.get(iT).ID == 1)  // Là Normal Tower
                                     towerObjects.get(iT).bulletofTower.add(cb.creNormalBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
@@ -169,10 +169,12 @@ public class Main extends Application {
                     int iB = 0;
                     while (iB < towerObjects.get(iT).bulletofTower.size()) { // Xóa các bullet đã trúng địch
                         if (towerObjects.get(iT).bulletofTower.get(iB).hit) {    // Đạn đã trúng địch
-                            enemyObjects.get(iE).health -= towerObjects.get(iT).bulletofTower.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
+                            towerObjects.get(iT).bulletofTower.get(iB).enemy.health -= towerObjects.get(iT).bulletofTower.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
                             // Viên đạn thứ iB của tháp thứ iT (Cơ mà đoạn này có khi chỉ cần xét iB = 0)
                             towerObjects.get(iT).bulletofTower.remove(iB);       // Xóa đạn trong List
+                            TotalBullet--;
                         } else iB++;
+                        //System.out.println(TotalBullet);
                     }
                     timeE += 1; // Càng nhiều Tower, địch sinh càng nhanh;
                     time[iT]++;     // Tăng thời gian chờ, đạt đủ sẽ có thể sinh đạn
@@ -221,15 +223,18 @@ public class Main extends Application {
     private void render() {
         //BulletObjects.forEach(g -> g.render(gc));
         //TowerObjects.forEach(bT -> bT.bulletofTower.forEach(g -> g.render(gc)));
+
+
+        for(int i=enemyObjects.size()-1; i>=0; i--) {
+            enemyObjects.get(i).render(gc);
+        }   // // In Enemy
+
+        towerObjects.forEach(g -> g.render(gc));    // In Tower
+
         for (TowerObject towerObject : towerObjects) {
             for (int n = 0; n < towerObject.bulletofTower.size(); n++) {
                 towerObject.bulletofTower.get(n).render(gc);
             }
-        }
-
-        for(int i=enemyObjects.size()-1; i>=0; i--) {
-            enemyObjects.get(i).render(gc);
-        }
-        towerObjects.forEach(g -> g.render(gc));
+        }   // In Bullet
     }
 }

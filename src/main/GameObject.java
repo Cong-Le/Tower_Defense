@@ -22,6 +22,7 @@ abstract class EnemyObject extends GameObject {
     boolean pass = false;   // Địch đã đến điểm kết thúc hay chưa
     Image EnemyImg;
     Direction direction;
+    int healthSpace;
 }
 abstract class TowerObject extends GameObject {
     int ID;
@@ -29,12 +30,10 @@ abstract class TowerObject extends GameObject {
     public int price;
     public double range;
     public double spaw;
-    //public Bullet bullet = null;
     Image TowerImg;
-    List<BulletObject> bulletofTower = new ArrayList<>();
+    List<BulletObject> bulletofTower = new ArrayList<>();   // List lưu các bullet hiện tại của Tower
 }
 abstract class BulletObject extends GameObject {
-    //int xDes, yDes;     // Điểm đến của đạn
     boolean hit = false;    // Bullet đã trúng địch hay chưa
     int ID;
     public int damage;
@@ -42,4 +41,5 @@ abstract class BulletObject extends GameObject {
     public double range;
     Image BulletImg;
     Direction direction;
+    EnemyObject enemy;
 }
