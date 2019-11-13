@@ -73,7 +73,7 @@ public class Bullet extends BulletObject {
 class CreateBullet extends Bullet {
     public Bullet creNormalBullet(int x, int y, EnemyObject enemy) {
         Bullet bullet = new Bullet();
-        bullet.x = x+30; bullet.y = y+15; // Điểm bắt đầu
+        bullet.x = x+35; bullet.y = y+50; // Điểm bắt đầu
        // bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
         bullet.enemy = enemy;
         bullet.ID = Config.NorT_ID;
@@ -85,7 +85,7 @@ class CreateBullet extends Bullet {
     }
     public Bullet creSniperBullet(int x, int y, EnemyObject enemy) {
         Bullet bullet = new Bullet();
-        bullet.x = x+30; bullet.y = y+15; // Điểm bắt đầu
+        bullet.x = x+35; bullet.y = y+50; // Điểm bắt đầu
         //bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
         bullet.enemy = enemy;
         bullet.ID = Config.SniT_ID;
@@ -97,7 +97,7 @@ class CreateBullet extends Bullet {
     }
     public Bullet creMachineBullet(int x, int y, EnemyObject enemy) {
         Bullet bullet = new Bullet();
-        bullet.x = x+30; bullet.y = y+15; // Điểm bắt đầu
+        bullet.x = x+35; bullet.y = y+50; // Điểm bắt đầu
         //bullet.xDes = xDes; bullet.yDes = yDes; // Điểm đến
         bullet.enemy = enemy;
         bullet.ID = Config.MacT_ID;

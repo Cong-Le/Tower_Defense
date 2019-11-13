@@ -32,9 +32,9 @@ public class Moutain {
         for (int i=0; i<10; i++) {
             Moutain m = new Moutain();
             m.button = new Button();
-            m.button.setLayoutX(MoutainPoints[i].x -33);
-            m.button.setLayoutY(MoutainPoints[i].y -53);
-            m.button.setPrefSize(130, 110);
+            m.button.setLayoutX(MoutainPoints[i].x -48);
+            m.button.setLayoutY(MoutainPoints[i].y -63);
+            m.button.setPrefSize(160, 130);
             m.button.setOpacity(0);     ///Chỉnh độ mờ để check vị trí
             m.x = MoutainPoints[i].x -7;
             m.y = MoutainPoints[i].y - 45;

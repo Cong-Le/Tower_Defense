@@ -1,23 +1,11 @@
 package main;
 
-import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Run {
-    protected int HP = Config.Player_HP;
-    protected int MONEY = Config.Player_Money;
+    int HP = Config.Player_HP;
+    int MONEY = Config.Player_Money;
 
    /* public void render(GraphicsContext gc) {
         Canvas canvas = new Canvas(1020, 600);
@@ -38,13 +26,11 @@ public class Run {
 
         gc.drawImage(enemy, x, y);
     }*/
-    public void GameStatus(Stage stage) {
 
-    }
 
-    static CreateEnemy ce = new CreateEnemy();
+    private static CreateEnemy ce = new CreateEnemy();
 
-    public static List<EnemyObject> enemy() {
+    static List<EnemyObject> enemy() {
         List<EnemyObject> e = new ArrayList<>();
         for (int i=0; i<5; i++) {       // 5
             e.add(ce.creNormalEnemy());

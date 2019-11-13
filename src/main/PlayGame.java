@@ -11,41 +11,35 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Main extends Application {
+public class PlayGame {
 
-    GraphicsContext gc;
-    List<TowerObject>  towerObjects  = new ArrayList<>();
-    List<EnemyObject>  enemyObjects  = new ArrayList<>();
-    List<BulletObject> BulletObjects = new ArrayList<>();
-    List<EnemyObject> temp = Run.enemy();
+    private GraphicsContext gc;
+    private List<TowerObject>  towerObjects  = new ArrayList<>();
+    private List<EnemyObject>  enemyObjects  = new ArrayList<>();
+    private List<EnemyObject> temp = Run.enemy();
 
-    final List<Moutain> moutainsSmall = Moutain.moutainsSmall();    //List các điểm có thể đặt tháp (Moutain Point), kèm button tương ứng
-    final List<Moutain> moutainsBig   = Moutain.moutainsBig();
-    List<Moutain> storeButton;
+    private final List<Moutain> moutainsSmall = Moutain.moutainsSmall();    //List các điểm có thể đặt tháp (Moutain Point), kèm button tương ứng
+    private final List<Moutain> moutainsBig   = Moutain.moutainsBig();
+    private List<Moutain> storeButton;
 
-    CreateEnemy  ce = new CreateEnemy();
-    CreateTower  ct = new CreateTower();
-    CreateBullet cb = new CreateBullet();
-    Enemy e = new Enemy();
-    Bullet b = new Bullet();
-    Run run = new Run();
+    private CreateTower  ct = new CreateTower();
+    private CreateBullet cb = new CreateBullet();
+    private Enemy e = new Enemy();
+    private Run run = new Run();
 
-    int TotalBullet =0;
-    int flag = 0,flag2 = 0;   // Chuột có ở Moutain Point hay không
-    int sx, sy; // Tọa độ để vẽ Store
-    int time[] = new int[10];   // Mảng lưu thời gian để xử lí tốc độ sinh đạn
-    int timeE = 0;
-    int index = 0; // Chỉ mục của list enemy
-    int HP = Config.Player_HP, Money = Config.Player_Money;
+    private int flag = 0,flag2 = 0;   // Chuột có ở Moutain Point hay không
+    private int sx, sy; // Tọa độ để vẽ Store
+    private int[] time = new int[10];   // Mảng lưu thời gian để xử lí tốc độ sinh đạn
+    private int timeE = 0;
+    private int index = 0; // Chỉ mục của list enemy
 
-    @Override
+    //@Override
     public void start(Stage stage) {
         Arrays.fill(time, 100);
 
@@ -57,7 +51,7 @@ public class Main extends Application {
         helpB.setOnMouseClicked((eventH) -> {
             flag2 = 1;
         });
-        helpB.setOnMouseExited((eventH) -> {
+        helpB.setOnMouseExited((eventH) -> {        // Bảng trợ giúap
             flag2 = 0;
         });
         root.getChildren().addAll(canvas, helpB);
@@ -82,6 +76,7 @@ public class Main extends Application {
                             towerObjects.add(ct.creNormalTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
                             moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.NorT_Price;
+                            flag = 0;
                         }
                     });
                     storeButton.get(1).button.setOnMouseClicked((event3) -> {   // Click đặt Sniper Tower
@@ -89,6 +84,7 @@ public class Main extends Application {
                             towerObjects.add(ct.creSniperTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
                             moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.SniT_Price;
+                            flag = 0;
                         }
                     });
                     storeButton.get(2).button.setOnMouseClicked((event4) -> {   // Click đặt MachineGun Tower
@@ -96,6 +92,7 @@ public class Main extends Application {
                             towerObjects.add(ct.creMachineTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
                             moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.MacT_Price;
+                            flag = 0;
                         }
                     });
                 }
@@ -121,14 +118,15 @@ public class Main extends Application {
                 render();
                 update();
                 if (flag == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Moutain Point
-                //run.GameStatus(stage);
 
-                if (timeE >= 400 && index <=55) {   // Sinh địch từ list có sẵn
+                // Sinh địch từ list có sẵn
+                if (timeE >= 600 && index <=55) {
                     enemyObjects.add(temp.get(index++));
                     timeE = 0;
                 }
-
-                for (int iE=0; iE < enemyObjects.size(); iE++) {    // Kiểm tra tình trạng của địch
+                // Kiểm tra tình trạng của địch
+                int iE = 0;
+                while (iE < enemyObjects.size()) {
                     if (enemyObjects.get(iE).health <= 0) {
                         run.MONEY += enemyObjects.get(iE).reward;
                         //System.out.println("Money = " + run.MONEY);
@@ -136,13 +134,12 @@ public class Main extends Application {
                     } else if (enemyObjects.get(iE).pass) {
                         enemyObjects.remove(iE);
                         run.HP--;
-                    }
+                    } else iE++;
                 }
 
                 // Code kiểm tra và tạo bullet tấn công địch
-
                 for (int iT = 0; iT < towerObjects.size(); iT++) {
-                    int iE = 0;
+                    iE = 0;
                     if (time[iT] > towerObjects.get(iT).spaw) {
                         while (iE < enemyObjects.size()) {
 
@@ -152,7 +149,7 @@ public class Main extends Application {
 
                             if (distance <= towerObjects.get(iT).range) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
                                 time[iT] = 0;   // reset lại thời gian chờ sinh đạn
-                                TotalBullet++;
+
                                 // Kiểm tra loại tháp, tạo bullet tương ứng và thêm vào bullet list của tháp đó
                                 if (towerObjects.get(iT).ID == 1)  // Là Normal Tower
                                     towerObjects.get(iT).bulletofTower.add(cb.creNormalBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
@@ -165,27 +162,26 @@ public class Main extends Application {
                             iE++;
                         }
                     }
-
+                    // Xóa các bullet đã trúng địch
                     int iB = 0;
-                    while (iB < towerObjects.get(iT).bulletofTower.size()) { // Xóa các bullet đã trúng địch
+                    while (iB < towerObjects.get(iT).bulletofTower.size()) {
                         if (towerObjects.get(iT).bulletofTower.get(iB).hit) {    // Đạn đã trúng địch
                             towerObjects.get(iT).bulletofTower.get(iB).enemy.health -= towerObjects.get(iT).bulletofTower.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
                             // Viên đạn thứ iB của tháp thứ iT (Cơ mà đoạn này có khi chỉ cần xét iB = 0)
                             towerObjects.get(iT).bulletofTower.remove(iB);       // Xóa đạn trong List
-                            TotalBullet--;
                         } else iB++;
-                        //System.out.println(TotalBullet);
                     }
-                    timeE += 1; // Càng nhiều Tower, địch sinh càng nhanh;
+                    timeE += 2;     // Càng nhiều Tower, địch sinh càng nhanh;
                     time[iT]++;     // Tăng thời gian chờ, đạt đủ sẽ có thể sinh đạn
                 }
-                timeE += 3;
+                timeE += 2;
             }
 
         };
         timer.start();
 
     }
+
     private void drawHelpTable(GraphicsContext gc) {        // Có thể in ra bảng trợ giúp
         Image helptable = new Image("file:src/Image/HelpTable.png");
         SnapshotParameters params = new SnapshotParameters();

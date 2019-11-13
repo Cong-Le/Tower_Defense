@@ -8,17 +8,17 @@ public class Config {
 
     //Normal GameStage.Enemy
     public static final int NorE_ID = 1;
-    public static final int NorE_Health = 25;
+    public static final int NorE_Health = 30;
     public static final int NorE_Reward = 8;
     public static final double NorE_Speed = 1.6;
     //Tanker GameStage.Enemy
     public static final int TanE_ID = 2;
-    public static final int TanE_Health = 40;
+    public static final int TanE_Health = 45;
     public static final int TanE_Reward = 8;
     public static final double TanE_Speed = 0.9;
     //Smaller GameStage.Enemy
     public static final int SmaE_ID = 3;
-    public static final int SmaE_Health = 17;
+    public static final int SmaE_Health = 20;
     public static final int SmaE_Reward = 8;
     public static final double SmaE_Speed = 1.8;
     //Boss GameStage.Enemy
@@ -47,9 +47,9 @@ public class Config {
     public static final int MacT_Price = 40;
 
     //Bullet
-    public static final double NorB_Speed = 5;     // Tốc độ bay của đạn, càng lớn càng nhanh
+    public static final double NorB_Speed = 10;     // Tốc độ bay của đạn, càng lớn càng nhanh
     public static final double SniB_Speed = 12;
-    public static final double MacB_Speed = 10;
+    public static final double MacB_Speed = 8;
 
     //Spawner
     public static final int Spawner_x = 0;

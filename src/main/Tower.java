@@ -22,8 +22,8 @@ public class Tower extends TowerObject {
 
         gc.drawImage(tImg, x+8, y+3);
 
-        gc.setFill(Color.RED);
-        gc.fillOval(x+35, y+40, 10, 10);
+        //gc.setFill(Color.RED);
+        //gc.fillOval(x+35, y+50, 10, 10);
     }
 
     @Override
