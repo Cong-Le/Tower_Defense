@@ -1,28 +1,33 @@
 package main;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PlayGame {
-
+public class GamePlay {
+    private AnimationTimer timer;
+    private MediaPlayer mediaPlayer;
     private GraphicsContext gc;
-    private List<TowerObject>  towerObjects  = new ArrayList<>();
+
+    private List<TowerObject>  towerObjects  = new ArrayList<>();   // List các tower và enemy trên màn hình
     private List<EnemyObject>  enemyObjects  = new ArrayList<>();
-    private List<EnemyObject> temp = Run.enemy();
+    private List<EnemyObject> temp = Run.enemy();   // List các enemy mặc đinh
 
     private final List<Moutain> moutainsSmall = Moutain.moutainsSmall();    //List các điểm có thể đặt tháp (Moutain Point), kèm button tương ứng
     private final List<Moutain> moutainsBig   = Moutain.moutainsBig();
@@ -40,21 +45,40 @@ public class PlayGame {
     private int index = 0; // Chỉ mục của list enemy
 
     //@Override
-    public void start(Stage stage) {
+    void start(Stage stage) {
         Arrays.fill(time, 100);
-
 
         Canvas canvas = new Canvas(1020, 600);
         gc = canvas.getGraphicsContext2D();
         Group root = new Group();
+
+        // Bảng trợ giúp
         Button helpB = new Button("Click me");   helpB.setLayoutX(950); helpB.setLayoutY(10); //helpB.setPrefSize(30, 30);
-        helpB.setOnMouseClicked((eventH) -> {
-            flag2 = 1;
+        helpB.setOnMouseClicked((eventH) -> { flag2 = 1; });
+        helpB.setOnMouseExited((eventH) -> {  flag2 = 0; });
+
+        // Pause, Continue
+        Button PauButton = new Button();
+
+        PauButton.setLayoutX(900); PauButton.setLayoutY(10);
+        PauButton.setOnMouseClicked((eventPause) -> {
+            PauButton.setText("Continue");
+            timer.stop();
+            PauButton.setOnMouseClicked((eventContinue) -> {
+                PauButton.setText("Pause");
+                timer.start();
+            });
         });
-        helpB.setOnMouseExited((eventH) -> {        // Bảng trợ giúap
-            flag2 = 0;
-        });
-        root.getChildren().addAll(canvas, helpB);
+
+        // Hiện HP, Money người chơi
+        Label hp = new Label(); Label money = new Label();
+        hp.setText(String.valueOf(run.HP)); money.setText(String.valueOf(run.MONEY));
+        hp.setFont(new Font("", 20));   money.setFont(new Font("", 20));
+        hp.setTextFill(Color.WHITE);    money.setTextFill(Color.WHEAT);
+        hp.setLayoutX(80); hp.setLayoutY(20);
+        money.setLayoutX(150); money.setLayoutY(20);
+
+        root.getChildren().addAll(canvas, helpB, hp, money, PauButton);
 
         // Code tạo tháp
         for (int i=0; i<moutainsSmall.size(); i++) {
@@ -110,28 +134,30 @@ public class PlayGame {
         stage.setTitle("Tower Defense");
         stage.show();
 
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 drawMap(gc);
-                if (flag2 == 1) drawHelpTable(gc);
                 render();
                 update();
+                checkEndGame(gc);
+                if (flag2 == 1) drawHelpTable(gc);
                 if (flag == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Moutain Point
 
+                hp.setText(String.valueOf(run.HP)); money.setText(String.valueOf(run.MONEY));   // Cập nhật HP và Money của người chơi
+
                 // Sinh địch từ list có sẵn
-                if (timeE >= 600 && index <=55) {
+                if (timeE >= 200 && index <= 55) { //600
                     enemyObjects.add(temp.get(index++));
                     timeE = 0;
                 }
                 // Kiểm tra tình trạng của địch
                 int iE = 0;
                 while (iE < enemyObjects.size()) {
-                    if (enemyObjects.get(iE).health <= 0) {
+                    if (enemyObjects.get(iE).health <= 0) {     // Địch hết HP
                         run.MONEY += enemyObjects.get(iE).reward;
-                        //System.out.println("Money = " + run.MONEY);
                         enemyObjects.remove(iE);
-                    } else if (enemyObjects.get(iE).pass) {
+                    } else if (enemyObjects.get(iE).pass) {     // Địch đã đến điểm cuối
                         enemyObjects.remove(iE);
                         run.HP--;
                     } else iE++;
@@ -181,6 +207,34 @@ public class PlayGame {
         timer.start();
 
     }
+    private void checkEndGame(GraphicsContext gc) {
+        if (run.HP <= 0) {      // Defeat
+            timer.stop();
+
+            try {
+                Media media = new Media(getClass().getResource("/Sound/Defeat.mp3").toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+                mediaPlayer.setVolume(0.1);
+            } catch (Exception e) {}
+
+            Image VictoryImg = new Image("file:src/Image/Defeat.png");
+            gc.drawImage(VictoryImg, 285, 50, 450, 500);
+        }
+        if (index==56 && enemyObjects.isEmpty()) {  // Victory
+            timer.stop();
+
+            try {
+                Media media = new Media(getClass().getResource("/Sound/Victory.mp3").toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+                mediaPlayer.setVolume(0.1);
+            } catch (Exception e) {}
+
+            Image VictoryImg = new Image("file:src/Image/Victory.png");
+            gc.drawImage(VictoryImg, 206, 50, 608, 500);
+        }
+    }
 
     private void drawHelpTable(GraphicsContext gc) {        // Có thể in ra bảng trợ giúp
         Image helptable = new Image("file:src/Image/HelpTable.png");
@@ -207,6 +261,9 @@ public class PlayGame {
 
     private void drawMap(GraphicsContext gc) {
         gc.drawImage(new Image("file:src/Image/Map3.png"), 0, 0);
+        gc.drawImage(new Image("file:src/Image/PlayerInfo.png"), 20, 10, 210, 50);
+
+
     }
 
     private void update() {

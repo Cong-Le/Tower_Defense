@@ -11,11 +11,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
-import java.util.Random;
-
 public class MainMenu extends Application {
     private GraphicsContext gc;
-    PlayGame playGame = new PlayGame();
+    GamePlay gamePlay = new GamePlay();
 
     public void start(Stage stage) {
         Canvas canvas = new Canvas(1020, 600);
@@ -48,7 +46,7 @@ public class MainMenu extends Application {
 
 
         playButton.setOnMouseClicked((Event) -> {
-            playGame.start(stage);
+            gamePlay.start(stage);
         });
 
         root.getChildren().addAll(canvas, ss, playIv, playButton);

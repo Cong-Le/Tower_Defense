@@ -10,22 +10,22 @@ public class Config {
     public static final int NorE_ID = 1;
     public static final int NorE_Health = 30;
     public static final int NorE_Reward = 8;
-    public static final double NorE_Speed = 1.6;
+    public static final double NorE_Speed = 5;//1.6;
     //Tanker GameStage.Enemy
     public static final int TanE_ID = 2;
-    public static final int TanE_Health = 45;
+    public static final int TanE_Health = 5;//45;
     public static final int TanE_Reward = 8;
-    public static final double TanE_Speed = 0.9;
+    public static final double TanE_Speed = 5;//0.9;
     //Smaller GameStage.Enemy
     public static final int SmaE_ID = 3;
-    public static final int SmaE_Health = 20;
+    public static final int SmaE_Health = 5;//20;
     public static final int SmaE_Reward = 8;
-    public static final double SmaE_Speed = 1.8;
+    public static final double SmaE_Speed =6;// 1.8;
     //Boss GameStage.Enemy
     public static final int BosE_ID = 4;
-    public static final int BosE_Health = 60;
+    public static final int BosE_Health =5;// 60;
     public static final int BosE_Reward = 25;
-    public static final double BosE_Speed = 1.3;
+    public static final double BosE_Speed = 5;//1.3;
 
     //Normal Tower
     public static final int NorT_ID = 1;

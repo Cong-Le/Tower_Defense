@@ -56,9 +56,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
-        <option value="FxmlFile" />
         <option value="module-info" />
         <option value="Class" />
+        <option value="FxmlFile" />
       </list>
     </option>
   </component>
@@ -67,8 +67,12 @@
       <setting name="OPEN_NEW_TAB" value="false" />
     </FindUsagesManager>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectId" id="1TLJ5hOhzZEyBbH0RX5qyE0oj28" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
@@ -89,7 +93,7 @@
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -130,7 +134,7 @@
       </method>
     </configuration>
     <configuration name="Main" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="main.PlayGame" />
+      <option name="MAIN_CLASS_NAME" value="main.GamePlay" />
       <module name="BTL-OOP" />
       <extension name="coverage">
         <pattern>
@@ -237,6 +241,9 @@
       <workItem from="1573536285020" duration="25265000" />
       <workItem from="1573629381562" duration="2501000" />
       <workItem from="1573655765036" duration="9490000" />
+      <workItem from="1573707028906" duration="849000" />
+      <workItem from="1573741002499" duration="8359000" />
+      <workItem from="1573812411592" duration="17902000" />
     </task>
     <servers />
   </component>

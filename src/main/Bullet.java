@@ -42,15 +42,15 @@ public class Bullet extends BulletObject {
     @Override
     void update() {
 
-        if (Math.abs(x-enemy.x + y-enemy.y) < 20)  hit = true;
+        if (Math.abs(x-enemy.x + y-enemy.y) < 10)  hit = true;
 
-        x += Math.round( (double)(enemy.x-x)*speed/Math.abs(enemy.x-x + enemy.y-y) );
-        y += Math.round( (double)(enemy.y-y)*speed/Math.abs(enemy.x-x + enemy.y-y) );
+        x += Math.round( (double)(enemy.x-x)*speed/(Math.abs(enemy.x-x)+ Math.abs(enemy.y-y)) );
+        y += Math.round( (double)(enemy.y-y)*speed/(Math.abs(enemy.x-x)+ Math.abs(enemy.y-y)) );
 
-        //System.out.println(x + "  " + y);
-
-
-        //System.out.println(x + " " +y);
+        if (y < 50) {
+            System.out.println("xE = " + enemy.x + " ,yE = " + enemy.y);
+            System.out.println("xPre = " + x + " ,yPre = " + y);
+        }
 
         /*calculateDirection();
 
