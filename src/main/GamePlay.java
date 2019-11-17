@@ -362,7 +362,7 @@ public class GamePlay {
         try {
             Media media = new Media(getClass().getResource("/Sound/PiratesoftheCaribbean.mp3").toURI().toString());
             music = new MediaPlayer(media);
-            music.setVolume(0.1);
+            music.setVolume(0.15);
         } catch (Exception e) {}
     }
     private void SoundBuild() {
