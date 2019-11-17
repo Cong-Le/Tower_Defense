@@ -32,10 +32,7 @@ class Enemy extends EnemyObject {
 
         ImageView iv = new ImageView(EnemyImg);
         //iv.setRotate(this.direction.getDegree());
-        //iv.setFitWidth(30);
-        //iv.setFitHeight(30);
         Image eImg = iv.snapshot(params, null);
-
         gc.drawImage(eImg, x, y);
 
         // Health Bar
@@ -115,7 +112,7 @@ class CreateEnemy extends Enemy {
         enemy.speed = Config.TanE_Speed;
         enemy.reward = Config.TanE_Reward;
         enemy.direction = Direction.UP;
-        enemy.EnemyImg = new Image("file:src/Image/Enemy_Tanker2.png");
+        enemy.EnemyImg = new Image("file:src/Image/Enemy_Tanker3.png");
         return enemy;
     }
     Enemy creBossEnemy() {

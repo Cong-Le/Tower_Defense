@@ -8,6 +8,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.Bloom;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -22,8 +23,13 @@ import java.util.List;
 
 public class GamePlay {
     private AnimationTimer timer;
-    private MediaPlayer mediaPlayer;
     private GraphicsContext gc;
+    private MediaPlayer mediaPlayer;
+    private MediaPlayer music;
+    private MediaPlayer build;
+    private MediaPlayer normal;
+    private MediaPlayer sniper;
+    private MediaPlayer machine;
 
     private List<TowerObject>  towerObjects  = new ArrayList<>();   // List các tower và enemy trên màn hình
     private List<EnemyObject>  enemyObjects  = new ArrayList<>();
@@ -33,52 +39,94 @@ public class GamePlay {
     private final List<Moutain> moutainsBig   = Moutain.moutainsBig();
     private List<Moutain> storeButton;
 
+    private MainMenu mainMenu;
     private CreateTower  ct = new CreateTower();
     private CreateBullet cb = new CreateBullet();
     private Enemy e = new Enemy();
     private Run run = new Run();
 
-    private int flag = 0,flag2 = 0;   // Chuột có ở Moutain Point hay không
+    private int flagBuild = 0, flagSound = 1, flagMusic = 1, flagTime = 1;
     private int sx, sy; // Tọa độ để vẽ Store
     private int[] time = new int[10];   // Mảng lưu thời gian để xử lí tốc độ sinh đạn
     private int timeE = 0;
     private int index = 0; // Chỉ mục của list enemy
+    private  int sizeOfEnemy = temp.size();
+
+    private Stage window = new Stage();
+    private Group root = new Group();
+    private Image soundImg = new Image("file:src/Image/SoundOn.png");
+    private Image musicImg = new Image("file:src/Image/MusicOn.png");
 
     //@Override
     void start(Stage stage) {
         Arrays.fill(time, 100);
 
+        mainMenu = new MainMenu();
+        window = stage;
+
         Canvas canvas = new Canvas(1020, 600);
         gc = canvas.getGraphicsContext2D();
-        Group root = new Group();
 
-        // Bảng trợ giúp
-        Button helpB = new Button("Click me");   helpB.setLayoutX(950); helpB.setLayoutY(10); //helpB.setPrefSize(30, 30);
-        helpB.setOnMouseClicked((eventH) -> { flag2 = 1; });
-        helpB.setOnMouseExited((eventH) -> {  flag2 = 0; });
-
-        // Pause, Continue
-        Button PauButton = new Button();
-
-        PauButton.setLayoutX(900); PauButton.setLayoutY(10);
-        PauButton.setOnMouseClicked((eventPause) -> {
-            PauButton.setText("Continue");
-            timer.stop();
-            PauButton.setOnMouseClicked((eventContinue) -> {
-                PauButton.setText("Pause");
-                timer.start();
-            });
-        });
 
         // Hiện HP, Money người chơi
-        Label hp = new Label(); Label money = new Label();
+        Label hp = new Label(); Label money = new Label(); Label wave = new Label();
         hp.setText(String.valueOf(run.HP)); money.setText(String.valueOf(run.MONEY));
-        hp.setFont(new Font("", 20));   money.setFont(new Font("", 20));
-        hp.setTextFill(Color.WHITE);    money.setTextFill(Color.WHEAT);
-        hp.setLayoutX(80); hp.setLayoutY(20);
-        money.setLayoutX(150); money.setLayoutY(20);
+        wave.setText("WAVE  " + String.valueOf(index) + "/56");
 
-        root.getChildren().addAll(canvas, helpB, hp, money, PauButton);
+        hp.setFont(Font.loadFont("file:src/Font/FSAhkioThin.otf", 25));
+        money.setFont(Font.loadFont("file:src/Font/FSAhkioThin.otf", 25));
+        wave.setFont(Font.loadFont("file:src/Font/FSAhkioThin.otf", 18));
+
+        hp.setTextFill(Color.WHEAT);    money.setTextFill(Color.WHEAT); wave.setTextFill(Color.WHEAT);
+        hp.setLayoutX(80); hp.setLayoutY(18);
+        money.setLayoutX(155); money.setLayoutY(18);
+        wave.setLayoutX(93); wave.setLayoutY(54);
+
+        // Sound
+        Button soundButton = new Button();   soundButton.setLayoutX(960); soundButton.setLayoutY(80);
+        soundButton.setPrefSize(50, 50);    soundButton.setOpacity(0);
+        soundButton.setOnMouseClicked((eventSound) -> {
+            if (flagSound == 1) {   // Âm đang bật
+                flagSound = 0;
+                soundImg = new Image("file:src/Image/SoundOff.png");
+            } else {
+                flagSound = 1;
+                soundImg = new Image("file:src/Image/SoundOn.png");
+            }
+        });
+        // Music
+        Music(); music.play();
+        Button musicButton = new Button();   musicButton.setLayoutX(960); musicButton.setLayoutY(150);
+        musicButton.setPrefSize(50, 50);    musicButton.setOpacity(0);
+        musicButton.setOnMouseClicked((eventMusic) -> {
+            if (flagMusic == 1) {   // Âm đang bật
+                flagMusic = 0;
+                musicImg = new Image("file:src/Image/MusicOff.png");
+                music.pause();
+            } else {
+                flagMusic = 1;
+                musicImg = new Image("file:src/Image/MusicOn.png");
+                music.play();
+            }
+        });
+
+        // Pause, Play
+        Button PauButton = new Button();
+        PauButton.setLayoutX(950); PauButton.setLayoutY(10); PauButton.setPrefSize(50, 50); PauButton.setOpacity(0);
+        PauButton.setOnMouseClicked((eventPause) -> {
+            if (flagTime == 1) {
+                timer.stop();
+                music.pause();
+                Image playImg = new Image("file:src/Image/Play.png");
+                gc.drawImage(playImg, 960, 10);
+                flagTime = 0;
+            } else {
+                timer.start();
+                music.play();
+                flagTime = 1;
+            }
+        });
+        root.getChildren().addAll(canvas, hp, money, wave, PauButton, soundButton, musicButton);
 
         // Code tạo tháp
         for (int i=0; i<moutainsSmall.size(); i++) {
@@ -86,47 +134,46 @@ public class GamePlay {
             int i2 = i;
             moutainsSmall.get(i).button.setOnMouseEntered((event) -> {   // Kéo chuột vào Moutain Point
                 if ( moutainsSmall.get(i2).empty ) {  // Vị trí còn trống (Chưa được xây tháp)
-                    flag = 1;
-                    sx = moutainsSmall.get(i2).x;
+                    flagBuild = 1;
+                    sx = moutainsSmall.get(i2).x;   // Tọa độ để vẽ store
                     sy = moutainsSmall.get(i2).y;
 
                     storeButton = Moutain.StoreButton(sx, sy);  // Tạo 3 button của store
                     root.getChildren().addAll(storeButton.get(0).button, storeButton.get(1).button, storeButton.get(2).button);
-                    //Circle towerRange = new Circle();
-                    //towerRange.setCenterX(moutainsSmall.get(i2).x); towerRange.setCenterY(moutainsSmall.get(i2).y);
 
                     storeButton.get(0).button.setOnMouseClicked((event2) -> {   // Click đặt Normal Tower
                         if (run.MONEY >= Config.NorT_Price) {
+                            if (flagSound==1) SoundBuild();
                             towerObjects.add(ct.creNormalTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
                             moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.NorT_Price;
-                            flag = 0;
+                            flagBuild = 0;
                         }
                     });
                     storeButton.get(1).button.setOnMouseClicked((event3) -> {   // Click đặt Sniper Tower
                         if (run.MONEY >= Config.SniT_Price) {
+                            if (flagSound==1) SoundBuild();
                             towerObjects.add(ct.creSniperTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
                             moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.SniT_Price;
-                            flag = 0;
+                            flagBuild = 0;
                         }
                     });
                     storeButton.get(2).button.setOnMouseClicked((event4) -> {   // Click đặt MachineGun Tower
                         if (run.MONEY >= Config.MacT_Price) {
+                            if (flagSound==1) SoundBuild();
                             towerObjects.add(ct.creMachineTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
                             moutainsSmall.get(i2).empty = false;
                             run.MONEY -= Config.MacT_Price;
-                            flag = 0;
+                            flagBuild = 0;
                         }
                     });
                 }
-
                 storeButton.clear();
             });
             moutainsBig.get(i).button.setOnMouseExited((event) -> {  //Kéo chuột khỏi Moutain Point
-                flag = 0;
+                flagBuild = 0;
             });
-
         }
 
         Scene scene = new Scene(root);
@@ -140,14 +187,14 @@ public class GamePlay {
                 drawMap(gc);
                 render();
                 update();
-                checkEndGame(gc);
-                if (flag2 == 1) drawHelpTable(gc);
-                if (flag == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Moutain Point
+                checkGameOver(gc);
+                if (flagBuild == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Moutain Point
 
                 hp.setText(String.valueOf(run.HP)); money.setText(String.valueOf(run.MONEY));   // Cập nhật HP và Money của người chơi
+                wave.setText("WAVE  " + String.valueOf(index) + "/56");
 
                 // Sinh địch từ list có sẵn
-                if (timeE >= 200 && index <= 55) { //600
+                if (timeE >= 450 && index < sizeOfEnemy) {
                     enemyObjects.add(temp.get(index++));
                     timeE = 0;
                 }
@@ -171,18 +218,24 @@ public class GamePlay {
 
                             int xPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).x;    // Tọa độ hiện tại của địch
                             int yPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).y;
-                            double distance = Road.distance(towerObjects.get(iT).x, towerObjects.get(iT).y, xPreEnemy, yPreEnemy); // Khoảng cách
+                            double distance = Road.distance(towerObjects.get(iT).x+30, towerObjects.get(iT).y+50, xPreEnemy, yPreEnemy); // Khoảng cách
 
                             if (distance <= towerObjects.get(iT).range) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
                                 time[iT] = 0;   // reset lại thời gian chờ sinh đạn
 
                                 // Kiểm tra loại tháp, tạo bullet tương ứng và thêm vào bullet list của tháp đó
-                                if (towerObjects.get(iT).ID == 1)  // Là Normal Tower
+                                if (towerObjects.get(iT).ID == 1) {  // Là Normal Tower
+                                    if (flagSound==1) SoundNormal();
                                     towerObjects.get(iT).bulletofTower.add(cb.creNormalBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
-                                if (towerObjects.get(iT).ID == 2)   // Là Sniper Tower
+                                }
+                                if (towerObjects.get(iT).ID == 2) {  // Là Sniper Tower
+                                    if (flagSound==1) SoundSniper();
                                     towerObjects.get(iT).bulletofTower.add(cb.creSniperBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
-                                if (towerObjects.get(iT).ID == 3)   // Là Machine Tower
+                                }
+                                if (towerObjects.get(iT).ID == 3) {  // Là Machine Tower
+                                    if (flagSound==1) SoundMachine();
                                     towerObjects.get(iT).bulletofTower.add(cb.creMachineBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                }
                                 break;
                             }
                             iE++;
@@ -193,7 +246,6 @@ public class GamePlay {
                     while (iB < towerObjects.get(iT).bulletofTower.size()) {
                         if (towerObjects.get(iT).bulletofTower.get(iB).hit) {    // Đạn đã trúng địch
                             towerObjects.get(iT).bulletofTower.get(iB).enemy.health -= towerObjects.get(iT).bulletofTower.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
-                            // Viên đạn thứ iB của tháp thứ iT (Cơ mà đoạn này có khi chỉ cần xét iB = 0)
                             towerObjects.get(iT).bulletofTower.remove(iB);       // Xóa đạn trong List
                         } else iB++;
                     }
@@ -207,48 +259,67 @@ public class GamePlay {
         timer.start();
 
     }
-    private void checkEndGame(GraphicsContext gc) {
+    private void checkGameOver(GraphicsContext gc) {
         if (run.HP <= 0) {      // Defeat
             timer.stop();
-
-            try {
+            if (flagSound==1)
+                try {
                 Media media = new Media(getClass().getResource("/Sound/Defeat.mp3").toURI().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
-                mediaPlayer.setVolume(0.1);
-            } catch (Exception e) {}
+                mediaPlayer.setVolume(0.5);
+                } catch (Exception e) {}
 
             Image VictoryImg = new Image("file:src/Image/Defeat.png");
-            gc.drawImage(VictoryImg, 285, 50, 450, 500);
+            gc.drawImage(VictoryImg, 330, 100, 360, 400);
+            Continue();
         }
-        if (index==56 && enemyObjects.isEmpty()) {  // Victory
+        if (index==sizeOfEnemy && enemyObjects.isEmpty()) {  // Victory
             timer.stop();
-
-            try {
+            if (flagSound==1)
+                try {
                 Media media = new Media(getClass().getResource("/Sound/Victory.mp3").toURI().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
-                mediaPlayer.setVolume(0.1);
+                mediaPlayer.setVolume(0.5);
             } catch (Exception e) {}
 
             Image VictoryImg = new Image("file:src/Image/Victory.png");
             gc.drawImage(VictoryImg, 206, 50, 608, 500);
+            Continue();
         }
-    }
+    }   // Kiểm tra kết thúc game
 
-    private void drawHelpTable(GraphicsContext gc) {        // Có thể in ra bảng trợ giúp
-        Image helptable = new Image("file:src/Image/HelpTable.png");
-        SnapshotParameters params = new SnapshotParameters();
+    private void Continue() {
+        Button ContiButton = new Button();
+        ContiButton.setLayoutX(455);    ContiButton.setLayoutY(400);
+        ContiButton.setPrefSize(110, 25);
+        ContiButton.setOpacity(0);
 
-        params.setFill(Color.TRANSPARENT);
-        ImageView iv = new ImageView(helptable);
-        //iv.setFitWidth(130);
-        //iv.setFitHeight(130);
-        Image ht = iv.snapshot(params, null);
-        gc.drawImage(ht, 1010 - helptable.getWidth(), 40);
-    }
+        Image ContiImg = new Image("file:src/Image/Continue.png");
+        ImageView ContiIv = new ImageView(ContiImg);
+        ContiIv.setLayoutX(455); ContiIv.setLayoutY(400);
 
-    private void drawStore(GraphicsContext gc, int x, int y) {  // In ra store
+        ContiButton.setOnMouseEntered((eventContinue) -> {
+            Bloom bloom = new Bloom();
+            bloom.setThreshold(0.5);      // Đặt ngưỡng (Threshold).
+            ContiIv.setEffect(bloom);
+
+            ContiButton.setOnMouseExited((Event2) -> {
+                bloom.setThreshold(1);
+                ContiIv.setEffect(bloom);
+            });
+        });
+
+        ContiButton.setOnMouseClicked((eventContinue) -> {
+            music.stop();
+            mainMenu.start(window);
+        });
+
+        root.getChildren().addAll(ContiIv, ContiButton);
+    }   // Button continue quay về màn hình chờ
+
+    private void drawStore(GraphicsContext gc, int x, int y) {
         Image store = new Image("file:src/Image/Store.png");
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
@@ -257,27 +328,23 @@ public class GamePlay {
         iv.setFitHeight(130);
         Image st = iv.snapshot(params, null);
         gc.drawImage(st, x-24, y-5);
-    }
+    }   // In ra store
 
     private void drawMap(GraphicsContext gc) {
         gc.drawImage(new Image("file:src/Image/Map3.png"), 0, 0);
-        gc.drawImage(new Image("file:src/Image/PlayerInfo.png"), 20, 10, 210, 50);
-
-
+        gc.drawImage(new Image("file:src/Image/PlayerInfo2.png"), 20, 10, 210, 75);
+        gc.drawImage(new Image("file:src/Image/Pause.png"), 960, 10);
+        gc.drawImage(soundImg, 960, 80);
+        gc.drawImage(musicImg, 960, 150);
     }
 
     private void update() {
-        //BulletObjects.forEach(GameObject::update);
         towerObjects.forEach(bT -> bT.bulletofTower.forEach(GameObject::update));
         enemyObjects.forEach(GameObject::update);
         towerObjects.forEach(GameObject::update);
     }
 
     private void render() {
-        //BulletObjects.forEach(g -> g.render(gc));
-        //TowerObjects.forEach(bT -> bT.bulletofTower.forEach(g -> g.render(gc)));
-
-
         for(int i=enemyObjects.size()-1; i>=0; i--) {
             enemyObjects.get(i).render(gc);
         }   // // In Enemy
@@ -289,5 +356,45 @@ public class GamePlay {
                 towerObject.bulletofTower.get(n).render(gc);
             }
         }   // In Bullet
+    }
+
+    private void Music() {
+        try {
+            Media media = new Media(getClass().getResource("/Sound/PiratesoftheCaribbean.mp3").toURI().toString());
+            music = new MediaPlayer(media);
+            music.setVolume(0.1);
+        } catch (Exception e) {}
+    }
+    private void SoundBuild() {
+        try {
+            Media media = new Media(getClass().getResource("/Sound/Build.mp3").toURI().toString());
+            build = new MediaPlayer(media);
+            build.setAutoPlay(true);
+            build.setVolume(0.6);
+        } catch (Exception e) {}
+    }
+    private void SoundNormal() {
+        try {
+            Media media = new Media(getClass().getResource("/Sound/Normal.mp3").toURI().toString());
+            normal = new MediaPlayer(media);
+            normal.setAutoPlay(true);
+            normal.setVolume(0.1);
+        } catch (Exception e) {}
+    }
+    private void SoundSniper() {
+        try {
+            Media media = new Media(getClass().getResource("/Sound/Sniper.mp3").toURI().toString());
+            sniper = new MediaPlayer(media);
+            sniper.setAutoPlay(true);
+            sniper.setVolume(0.2);
+        } catch (Exception e) {}
+    }
+    private void SoundMachine() {
+        try {
+            Media media = new Media(getClass().getResource("/Sound/Machine.mp3").toURI().toString());
+            machine = new MediaPlayer(media);
+            machine.setAutoPlay(true);
+            machine.setVolume(0.1);
+        } catch (Exception e) {}
     }
 }

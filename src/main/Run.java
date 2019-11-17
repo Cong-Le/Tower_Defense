@@ -1,5 +1,7 @@
 package main;
 
+import javafx.scene.image.Image;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,31 +9,11 @@ public class Run {
     int HP = Config.Player_HP;
     int MONEY = Config.Player_Money;
 
-   /* public void render(GraphicsContext gc) {
-        Canvas canvas = new Canvas(1020, 600);
-        Group root = new Group();
-        root.getChildren().add(canvas);
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Tower Defense");
-        stage.show();
-        SnapshotParameters params = new SnapshotParameters();
-        params.setFill(Color.TRANSPARENT);
-
-        ImageView iv = new ImageView(EnemyImg);
-        //iv.setRotate(this.direction.getDegree());
-        //iv.setFitWidth(30);
-        //iv.setFitHeight(30);
-        Image enemy = iv.snapshot(params, null);
-
-        gc.drawImage(enemy, x, y);
-    }*/
-
-
     private static CreateEnemy ce = new CreateEnemy();
 
     static List<EnemyObject> enemy() {
         List<EnemyObject> e = new ArrayList<>();
+
         for (int i=0; i<5; i++) {       // 5
             e.add(ce.creNormalEnemy());
         }
@@ -56,9 +38,7 @@ public class Run {
             e.add(ce.creSmallerEnemy());
             e.add(ce.creSmallerEnemy());
         }
+
         return e;
     }
-
-
-
 }

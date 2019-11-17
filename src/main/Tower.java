@@ -15,15 +15,13 @@ public class Tower extends TowerObject {
         params.setFill(Color.TRANSPARENT);
 
         ImageView iv = new ImageView(TowerImg);
-        //iv.setRotate(this.direction.getDegree());
         iv.setFitWidth(65);
         iv.setFitHeight(75);
         Image tImg = iv.snapshot(params, null);
-
         gc.drawImage(tImg, x+8, y+3);
 
-        gc.setFill(Color.RED);
-        gc.fillOval(x, y, 10, 10);
+        //gc.setFill(Color.RED);
+        //gc.fillOval(x, y,  10, 10);
     }
 
     @Override
