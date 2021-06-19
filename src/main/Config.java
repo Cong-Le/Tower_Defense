@@ -8,7 +8,7 @@ import java.net.URISyntaxException;
 public class Config {
 
     //PLAYER
-    public static final int Player_HP = 5;
+    public static final int Player_HP = 15;
     public static final int Player_Money = 150;
 
     //Normal GameStage.Enemy
