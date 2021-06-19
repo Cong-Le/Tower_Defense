@@ -35,9 +35,10 @@ public class GamePlay {
     private List<EnemyObject>  enemyObjects  = new ArrayList<>();
     private List<EnemyObject> temp = Run.enemy();   // List các enemy mặc đinh
 
-    private final List<Moutain> moutainsSmall = Moutain.moutainsSmall();    //List các điểm có thể đặt tháp (Moutain Point), kèm button tương ứng
-    private final List<Moutain> moutainsBig   = Moutain.moutainsBig();
-    private List<Moutain> storeButton;
+    private Mountain mountains = new Mountain();
+    private List<Mountain> mountainsSmall = mountains.mountainsSmall();    //List các điểm có thể đặt tháp (Mountain Point), kèm button tương ứng
+    private List<Mountain> mountainsBig   = mountains.mountainsBig();
+    private List<Mountain> storeButton;
 
     private MainMenu mainMenu;
     private CreateTower  ct = new CreateTower();
@@ -128,42 +129,43 @@ public class GamePlay {
         });
         root.getChildren().addAll(canvas, hp, money, wave, PauButton, soundButton, musicButton);
 
+
         // Code tạo tháp
-        for (int i=0; i<moutainsSmall.size(); i++) {
-            root.getChildren().addAll(moutainsBig.get(i).button, moutainsSmall.get(i).button);
+        for (int i=0; i<mountainsSmall.size(); i++) {
+            root.getChildren().addAll(mountainsBig.get(i).getButton(), mountainsSmall.get(i).getButton());
             int i2 = i;
-            moutainsSmall.get(i).button.setOnMouseEntered((event) -> {   // Kéo chuột vào Moutain Point
-                if ( moutainsSmall.get(i2).empty ) {  // Vị trí còn trống (Chưa được xây tháp)
+            mountainsSmall.get(i).getButton().setOnMouseEntered((event) -> {   // Kéo chuột vào Mountain Point
+                if ( mountainsSmall.get(i2).getEmpty() ) {  // Vị trí còn trống (Chưa được xây tháp)
                     flagBuild = 1;
-                    sx = moutainsSmall.get(i2).x;   // Tọa độ để vẽ store
-                    sy = moutainsSmall.get(i2).y;
+                    sx = mountainsSmall.get(i2).getX();   // Tọa độ để vẽ store
+                    sy = mountainsSmall.get(i2).getY();
 
-                    storeButton = Moutain.StoreButton(sx, sy);  // Tạo 3 button của store
-                    root.getChildren().addAll(storeButton.get(0).button, storeButton.get(1).button, storeButton.get(2).button);
+                    storeButton = Mountain.StoreButton(sx, sy);  // Tạo 3 button của store
+                    root.getChildren().addAll(storeButton.get(0).getButton(), storeButton.get(1).getButton(), storeButton.get(2).getButton());
 
-                    storeButton.get(0).button.setOnMouseClicked((event2) -> {   // Click đặt Normal Tower
+                    storeButton.get(0).getButton().setOnMouseClicked((event2) -> {   // Click đặt Normal Tower
                         if (run.MONEY >= Config.NorT_Price) {
                             if (flagSound==1) SoundBuild();
-                            towerObjects.add(ct.creNormalTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
-                            moutainsSmall.get(i2).empty = false;
+                            towerObjects.add(ct.creNormalTower(mountainsSmall.get(i2).getX(), mountainsSmall.get(i2).getY()));
+                            mountainsSmall.get(i2).setEmpty(false);
                             run.MONEY -= Config.NorT_Price;
                             flagBuild = 0;
                         }
                     });
-                    storeButton.get(1).button.setOnMouseClicked((event3) -> {   // Click đặt Sniper Tower
+                    storeButton.get(1).getButton().setOnMouseClicked((event3) -> {   // Click đặt Sniper Tower
                         if (run.MONEY >= Config.SniT_Price) {
                             if (flagSound==1) SoundBuild();
-                            towerObjects.add(ct.creSniperTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
-                            moutainsSmall.get(i2).empty = false;
+                            towerObjects.add(ct.creSniperTower(mountainsSmall.get(i2).getX(), mountainsSmall.get(i2).getY()));
+                            mountainsSmall.get(i2).setEmpty(false);
                             run.MONEY -= Config.SniT_Price;
                             flagBuild = 0;
                         }
                     });
-                    storeButton.get(2).button.setOnMouseClicked((event4) -> {   // Click đặt MachineGun Tower
+                    storeButton.get(2).getButton().setOnMouseClicked((event4) -> {   // Click đặt MachineGun Tower
                         if (run.MONEY >= Config.MacT_Price) {
                             if (flagSound==1) SoundBuild();
-                            towerObjects.add(ct.creMachineTower(moutainsSmall.get(i2).x, moutainsSmall.get(i2).y));
-                            moutainsSmall.get(i2).empty = false;
+                            towerObjects.add(ct.creMachineTower(mountainsSmall.get(i2).getX(), mountainsSmall.get(i2).getY()));
+                            mountainsSmall.get(i2).setEmpty(false);
                             run.MONEY -= Config.MacT_Price;
                             flagBuild = 0;
                         }
@@ -171,7 +173,7 @@ public class GamePlay {
                 }
                 storeButton.clear();
             });
-            moutainsBig.get(i).button.setOnMouseExited((event) -> {  //Kéo chuột khỏi Moutain Point
+            mountainsBig.get(i).getButton().setOnMouseExited((event) -> {  //Kéo chuột khỏi Mountain Point
                 flagBuild = 0;
             });
         }
@@ -188,7 +190,7 @@ public class GamePlay {
                 render();
                 update();
                 checkGameOver(gc);
-                if (flagBuild == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Moutain Point
+                if (flagBuild == 1) drawStore(gc, sx, sy);   // Hiện store khi kéo chuột đến Mountain Point
 
                 hp.setText(String.valueOf(run.HP)); money.setText(String.valueOf(run.MONEY));   // Cập nhật HP và Money của người chơi
                 wave.setText("WAVE  " + String.valueOf(index) + "/56");
@@ -201,10 +203,10 @@ public class GamePlay {
                 // Kiểm tra tình trạng của địch
                 int iE = 0;
                 while (iE < enemyObjects.size()) {
-                    if (enemyObjects.get(iE).health <= 0) {     // Địch hết HP
-                        run.MONEY += enemyObjects.get(iE).reward;
+                    if (enemyObjects.get(iE).getHealth() <= 0) {     // Địch hết HP
+                        run.MONEY += enemyObjects.get(iE).getReward();
                         enemyObjects.remove(iE);
-                    } else if (enemyObjects.get(iE).pass) {     // Địch đã đến điểm cuối
+                    } else if (enemyObjects.get(iE).getPass()) {     // Địch đã đến điểm cuối
                         enemyObjects.remove(iE);
                         run.HP--;
                     } else iE++;
@@ -213,28 +215,28 @@ public class GamePlay {
                 // Code kiểm tra và tạo bullet tấn công địch
                 for (int iT = 0; iT < towerObjects.size(); iT++) {
                     iE = 0;
-                    if (time[iT] > towerObjects.get(iT).spaw) {
+                    if (time[iT] > towerObjects.get(iT).getSpaw()) {
                         while (iE < enemyObjects.size()) {
 
-                            int xPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).x;    // Tọa độ hiện tại của địch
-                            int yPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).y;
-                            double distance = Road.distance(towerObjects.get(iT).x+30, towerObjects.get(iT).y+50, xPreEnemy, yPreEnemy); // Khoảng cách
+                            int xPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).getX();    // Tọa độ hiện tại của địch
+                            int yPreEnemy = e.getPresentCoordinates(enemyObjects.get(iE)).getY();
+                            double distance = Road.distance(towerObjects.get(iT).getX()+30, towerObjects.get(iT).getY()+50, xPreEnemy, yPreEnemy); // Khoảng cách
 
-                            if (distance <= towerObjects.get(iT).range) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
+                            if (distance <= towerObjects.get(iT).getRange()) { //Địch trong tầm bắn và đủ thời gian để sinh đạn
                                 time[iT] = 0;   // reset lại thời gian chờ sinh đạn
 
                                 // Kiểm tra loại tháp, tạo bullet tương ứng và thêm vào bullet list của tháp đó
-                                if (towerObjects.get(iT).ID == 1) {  // Là Normal Tower
+                                if (towerObjects.get(iT).getID() == 1) {  // Là Normal Tower
                                     if (flagSound==1) SoundNormal();
-                                    towerObjects.get(iT).bulletofTower.add(cb.creNormalBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                    towerObjects.get(iT).getBulletofTower().add(cb.creNormalBullet(towerObjects.get(iT).getX(), towerObjects.get(iT).getY(), enemyObjects.get(iE)));
                                 }
-                                if (towerObjects.get(iT).ID == 2) {  // Là Sniper Tower
+                                if (towerObjects.get(iT).getID() == 2) {  // Là Sniper Tower
                                     if (flagSound==1) SoundSniper();
-                                    towerObjects.get(iT).bulletofTower.add(cb.creSniperBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                    towerObjects.get(iT).getBulletofTower().add(cb.creSniperBullet(towerObjects.get(iT).getX(), towerObjects.get(iT).getY(), enemyObjects.get(iE)));
                                 }
-                                if (towerObjects.get(iT).ID == 3) {  // Là Machine Tower
+                                if (towerObjects.get(iT).getID() == 3) {  // Là Machine Tower
                                     if (flagSound==1) SoundMachine();
-                                    towerObjects.get(iT).bulletofTower.add(cb.creMachineBullet(towerObjects.get(iT).x, towerObjects.get(iT).y, enemyObjects.get(iE)));
+                                    towerObjects.get(iT).getBulletofTower().add(cb.creMachineBullet(towerObjects.get(iT).getX(), towerObjects.get(iT).getY(), enemyObjects.get(iE)));
                                 }
                                 break;
                             }
@@ -243,10 +245,10 @@ public class GamePlay {
                     }
                     // Xóa các bullet đã trúng địch
                     int iB = 0;
-                    while (iB < towerObjects.get(iT).bulletofTower.size()) {
-                        if (towerObjects.get(iT).bulletofTower.get(iB).hit) {    // Đạn đã trúng địch
-                            towerObjects.get(iT).bulletofTower.get(iB).enemy.health -= towerObjects.get(iT).bulletofTower.get(iB).damage;    // Trừ máu địch theo sát thương của đạn
-                            towerObjects.get(iT).bulletofTower.remove(iB);       // Xóa đạn trong List
+                    while (iB < towerObjects.get(iT).getBulletofTower().size()) {
+                        if (towerObjects.get(iT).getBulletofTower().get(iB).getHit()) {    // Đạn đã trúng địch
+                            towerObjects.get(iT).getBulletofTower().get(iB).getEnemy().setHealth(towerObjects.get(iT).getBulletofTower().get(iB).getEnemy().getHealth()  - (int)towerObjects.get(iT).getBulletofTower().get(iB).getDamage());    // Trừ máu địch theo sát thương của đạn
+                            towerObjects.get(iT).getBulletofTower().remove(iB);       // Xóa đạn trong List
                         } else iB++;
                     }
                     timeE += 2;     // Càng nhiều Tower, địch sinh càng nhanh;
@@ -264,10 +266,10 @@ public class GamePlay {
             timer.stop();
             if (flagSound==1)
                 try {
-                Media media = new Media(getClass().getResource("/Sound/Defeat.mp3").toURI().toString());
-                mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setAutoPlay(true);
-                mediaPlayer.setVolume(0.5);
+                    Media media = new Media(getClass().getResource("/Sound/Defeat.mp3").toURI().toString());
+                    mediaPlayer = new MediaPlayer(media);
+                    mediaPlayer.setAutoPlay(true);
+                    mediaPlayer.setVolume(0.5);
                 } catch (Exception e) {}
 
             Image VictoryImg = new Image("file:src/Image/Defeat.png");
@@ -278,11 +280,11 @@ public class GamePlay {
             timer.stop();
             if (flagSound==1)
                 try {
-                Media media = new Media(getClass().getResource("/Sound/Victory.mp3").toURI().toString());
-                mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.setAutoPlay(true);
-                mediaPlayer.setVolume(0.5);
-            } catch (Exception e) {}
+                    Media media = new Media(getClass().getResource("/Sound/Victory.mp3").toURI().toString());
+                    mediaPlayer = new MediaPlayer(media);
+                    mediaPlayer.setAutoPlay(true);
+                    mediaPlayer.setVolume(0.5);
+                } catch (Exception e) {}
 
             Image VictoryImg = new Image("file:src/Image/Victory.png");
             gc.drawImage(VictoryImg, 206, 50, 608, 500);
@@ -339,23 +341,24 @@ public class GamePlay {
     }
 
     private void update() {
-        towerObjects.forEach(bT -> bT.bulletofTower.forEach(GameObject::update));
+        towerObjects.forEach(bT -> bT.getBulletofTower().forEach(GameObject::update));
         enemyObjects.forEach(GameObject::update);
         towerObjects.forEach(GameObject::update);
     }
 
     private void render() {
+        //In Enemy
         for(int i=enemyObjects.size()-1; i>=0; i--) {
             enemyObjects.get(i).render(gc);
-        }   // // In Enemy
+        }
 
         towerObjects.forEach(g -> g.render(gc));    // In Tower
 
         for (TowerObject towerObject : towerObjects) {
-            for (int n = 0; n < towerObject.bulletofTower.size(); n++) {
-                towerObject.bulletofTower.get(n).render(gc);
+            for (int n = 0; n < towerObject.getBulletofTower().size(); n++) {
+                towerObject.getBulletofTower().get(n).render(gc);
             }
-        }   // In Bullet
+        }   //In Bullet
     }
 
     private void Music() {
@@ -370,7 +373,7 @@ public class GamePlay {
             Media media = new Media(getClass().getResource("/Sound/Build.mp3").toURI().toString());
             build = new MediaPlayer(media);
             build.setAutoPlay(true);
-            build.setVolume(0.6);
+            build.setVolume(0.7);
         } catch (Exception e) {}
     }
     private void SoundNormal() {
@@ -394,7 +397,7 @@ public class GamePlay {
             Media media = new Media(getClass().getResource("/Sound/Machine.mp3").toURI().toString());
             machine = new MediaPlayer(media);
             machine.setAutoPlay(true);
-            machine.setVolume(0.1);
+            machine.setVolume(0.2);
         } catch (Exception e) {}
     }
 }

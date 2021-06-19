@@ -14,11 +14,11 @@ public class Tower extends TowerObject {
         SnapshotParameters params = new SnapshotParameters();
         params.setFill(Color.TRANSPARENT);
 
-        ImageView iv = new ImageView(TowerImg);
+        ImageView iv = new ImageView(getTowerImg());
         iv.setFitWidth(65);
         iv.setFitHeight(75);
         Image tImg = iv.snapshot(params, null);
-        gc.drawImage(tImg, x+8, y+3);
+        gc.drawImage(tImg, getX()+8, getY()+3);
 
         //gc.setFill(Color.RED);
         //gc.fillOval(x, y,  10, 10);
@@ -32,35 +32,35 @@ public class Tower extends TowerObject {
 class CreateTower extends Tower {
     public Tower creNormalTower(int x, int y) {
         Tower tower = new Tower();
-        tower.x = x;    tower.y = y;
-        tower.ID = Config.NorT_ID;
-        tower.damage = Config.NorT_Damage;
-        tower.range = Config.NorT_Range;
-        tower.spaw = Config.NorT_Spaw;
-        tower.price = Config.NorT_Price;
-        tower.TowerImg = new Image("file:src/Image/Tower_Normal.png");
+        tower.setX(x);    tower.setY(y);
+        tower.setID(Config.NorT_ID);
+        tower.setDamage(Config.NorT_Damage);
+        tower.setRange(Config.NorT_Range);
+        tower.setSpaw(Config.NorT_Spaw);
+        tower.setPrice(Config.NorT_Price);
+        tower.setTowerImg(new Image("file:src/Image/Tower_Normal.png"));
         return tower;
     }
     public Tower creSniperTower(int x, int y) {
         Tower tower = new Tower();
-        tower.x = x;    tower.y = y-5;
-        tower.ID = Config.SniT_ID;
-        tower.damage = Config.SniT_Damage;
-        tower.range = Config.SniT_Range;
-        tower.spaw = Config.SniT_Spaw;
-        tower.price = Config.SniT_Price;
-        tower.TowerImg = new Image("file:src/Image/Tower_Sniper.png");
+        tower.setX(x);    tower.setY(y-5);
+        tower.setID(Config.SniT_ID);
+        tower.setDamage(Config.SniT_Damage);
+        tower.setRange(Config.SniT_Range);
+        tower.setSpaw(Config.SniT_Spaw);
+        tower.setPrice(Config.SniT_Price);
+        tower.setTowerImg(new Image("file:src/Image/Tower_Sniper.png"));
         return tower;
     }
     public Tower creMachineTower(int x, int y) {
         Tower tower = new Tower();
-        tower.x = x;    tower.y = y;
-        tower.ID = Config.MacT_ID;
-        tower.damage = Config.MacT_Damage;
-        tower.range = Config.MacT_Range;
-        tower.spaw = Config.MacT_Spaw;
-        tower.price = Config.MacT_Price;
-        tower.TowerImg = new Image("file:src/Image/Tower_Machine.png");
+        tower.setX(x);    tower.setY(y);
+        tower.setID(Config.MacT_ID);
+        tower.setDamage(Config.MacT_Damage);
+        tower.setRange(Config.MacT_Range);
+        tower.setSpaw(Config.MacT_Spaw);
+        tower.setPrice(Config.MacT_Price);
+        tower.setTowerImg(new Image("file:src/Image/Tower_Machine.png"));
         return tower;
     }
 }
