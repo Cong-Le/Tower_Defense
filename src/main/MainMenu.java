@@ -17,27 +17,44 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class MainMenu extends Application {
-
+    GraphicsContext gc;
     GamePlay gamePlay = new GamePlay();
     MediaPlayer mediaPlayer;
+    int flagMusic = 1;
 
     public void start(Stage stage) {
         Canvas canvas = new Canvas(1020, 600);
         Group root = new Group();
+        gc = canvas.getGraphicsContext2D();
+        Image ss = new Image("file:src/Image/ScreenSaver.png");
+        gc.drawImage(ss, 0, 0);
 
-        ImageView ss = new ImageView("file:src/Image/ScreenSaver.png");
-
-        Button playButton = new Button();
         Image playImg = new Image("file:src/Image/PlayNow.png");
         ImageView playIv = new ImageView(playImg);
         playIv.setFitWidth(200); playIv.setFitHeight(60);
         playIv.setLayoutX(400); playIv.setLayoutY(350);
 
+        Button playButton = new Button();
         playButton.setLayoutX(400); playButton.setLayoutY(350);
         playButton.setPrefSize(200, 60);
         playButton.setOpacity(0);
-        music();
-        mediaPlayer.play();
+
+        // Bật tắt nhạc
+        music(); mediaPlayer.play();
+        Button musicButton = new Button();   musicButton.setLayoutX(960); musicButton.setLayoutY(15);
+        musicButton.setPrefSize(50, 50);    musicButton.setOpacity(0);
+        gc.drawImage(new Image("file:src/Image/MusicOn.png"), 960, 15);
+        musicButton.setOnMouseClicked((eventMusic) -> {
+            if (flagMusic == 1) {   // Âm đang bật
+                flagMusic = 0;
+                gc.drawImage(new Image("file:src/Image/MusicOff.png"), 960, 15);
+                mediaPlayer.stop();
+            } else {
+                flagMusic = 1;
+                gc.drawImage(new Image("file:src/Image/MusicOn.png"), 960, 15);
+                mediaPlayer.play();
+            }
+        });
 
         playButton.setOnMouseEntered((Event1) -> {  // Làm sáng button khi di chuột vào
             Bloom bloom = new Bloom();
@@ -62,7 +79,7 @@ public class MainMenu extends Application {
         label.setTextFill(Color.WHITE);
         label.setLayoutX(20); label.setLayoutY(570);
 
-        root.getChildren().addAll(canvas, ss, playIv, label, playButton);
+        root.getChildren().addAll(canvas, playIv, label, musicButton, playButton);
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Tower Defense");
